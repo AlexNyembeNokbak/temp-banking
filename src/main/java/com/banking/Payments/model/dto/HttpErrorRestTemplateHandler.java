@@ -21,52 +21,7 @@ public class HttpErrorRestTemplateHandler {
 	public static final int INTERNAL_SERVER_ERROR=500;
 	public static final int BAD_GATEWAY=502;
 	public static final int GATEWAY_TIMEOUT=503;
-	
-	
-	/*public static ResponseEntity<ResponseTransferDto> convertErrorMsgToResponseTransfer(String errorMsg) {
-		ResponseTransferDto respTransfer=null;
-		if (errorMsg==null) {
-			respTransfer=getGenericErrorRespTransfer();
-			return ResponseEntity.ok(respTransfer);
-		}
-		String errCode=errorMsg.substring(0, 3);
-		log.info("ErrCode: {}",errCode);
 		
-		String parsedErrMsg=errorMsg.replaceAll(HttpErrorRestTemplateHandler.END_OF_LINE1, "");
-		String finalParsedErrMsg=parsedErrMsg.replaceAll(HttpErrorRestTemplateHandler.END_OF_LINE2, " ");
-		log.info("Final parsed error msg: {}",finalParsedErrMsg);
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonRespTransfer=getJsonRespTransfer(finalParsedErrMsg);
-		try {
-			respTransfer=objectMapper.readValue(jsonRespTransfer, ResponseTransferDto.class);
-		} catch (JsonMappingException e) {
-			log.error(e.getMessage());
-			respTransfer=getGenericErrorRespTransfer();
-			return ResponseEntity.ok(respTransfer);
-		} catch (JsonProcessingException e) {
-			log.error(e.getMessage());
-			respTransfer=getGenericErrorRespTransfer();
-			return ResponseEntity.ok(respTransfer);
-		}
-		
-		log.info("respTransfer: {}",respTransfer);
-		Integer parsedErrCode=null;
-		try {
-			parsedErrCode=Integer.valueOf(errCode);
-		}catch(NumberFormatException e) {
-			log.error(e.getMessage());
-			return ResponseEntity.ok(respTransfer);
-		}
-		
-		if (parsedErrCode<BAD_REQUEST) {
-			return ResponseEntity.ok(respTransfer);
-		}
-				
-		return ResponseEntity.status(parsedErrCode)
-				.body(respTransfer);
-	}*/
-	
 	public static <E> ResponseEntity<E> convertErrorMsgToResponseEntity(String errorMsg,E genericErrorResp) {
 		E respTransfer=null;
 		if (errorMsg==null) {

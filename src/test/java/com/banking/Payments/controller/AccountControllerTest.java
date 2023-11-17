@@ -52,5 +52,22 @@ public class AccountControllerTest extends PaymentsApplicationTests {
 		.andExpect(MockMvcResultMatchers.jsonPath("$.status").value("OK"))
 		.andExpect(MockMvcResultMatchers.jsonPath("errors").isEmpty());
 	}
+	
+	@Test
+	void getAllAccountTransactionsWithInvalidAccountId() throws Exception {
+		String accountId="14987";
+		String fromAccountingDate="26549";
+		String toAccountingDate="f544";
+		
+		when(accountService.getAllAccountTransactions(anyString(), anyString(), anyString()))
+		.thenReturn(getAllAccountTransactionsWhithBadRequest());
+		
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/gbs/banking/v4.0/accounts/" + accountId + "/transactions?fromAccountingDate="
+						+fromAccountingDate+ "&toAccountingDate="+toAccountingDate))
+		.andExpect(status().is(400))
+		.andExpect(MockMvcResultMatchers.jsonPath("$.status").value("KO"))
+		.andExpect(MockMvcResultMatchers.jsonPath("errors").isNotEmpty());
+	}
 
 }

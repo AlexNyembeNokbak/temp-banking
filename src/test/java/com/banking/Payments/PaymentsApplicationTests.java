@@ -1,5 +1,8 @@
 package com.banking.Payments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,12 +14,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.web.WebAppConfiguration;
 import com.banking.Payments.enumeration.ResponseStatus;
+import com.banking.Payments.model.dto.AccountTransactionsResponseDto;
 import com.banking.Payments.model.dto.HttpErrorRestTemplateHandler;
 import com.banking.Payments.model.dto.MoneyTransferRequestDto;
 import com.banking.Payments.model.dto.MoneyTransferResponseDto;
 import com.banking.Payments.model.dto.ResponseBalanceDto;
+import com.banking.Payments.model.dto.ResponseTransactionsDto;
 import com.banking.Payments.model.dto.ResponseTransferDto;
+import com.banking.Payments.model.dto.TransactionResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -114,6 +121,11 @@ public class PaymentsApplicationTests {
 	public ResponseEntity<ResponseBalanceDto> getAccountBalanceWhithBadRequest() {
 		return ResponseEntity.status(HttpErrorRestTemplateHandler.BAD_REQUEST)
 				.body(HttpErrorRestTemplateHandler.getGenericErrorRespBalance());
+	} 
+	
+	public ResponseEntity<ResponseTransactionsDto> getAllAccountTransactionsWhithBadRequest() {
+		return ResponseEntity.status(HttpErrorRestTemplateHandler.BAD_REQUEST)
+				.body(HttpErrorRestTemplateHandler.getGenericErrorRespTransactions());
 	}
 	
 	public ResponseEntity<ResponseBalanceDto> getAccountBalanceWhithValidRequest() {
@@ -189,6 +201,65 @@ public class PaymentsApplicationTests {
 			return null;
 		}
 		return resp;
+	}
+	
+	public ResponseEntity <ResponseTransactionsDto> getAllAccountTransactionsWithValidRequest() {
+		String json="{\n"
+				+ "  \"list\": [\n"
+				+ "    {\n"
+				+ "      \"transactionId\": \"1331714087\",\n"
+				+ "      \"operationId\": \"00000000273015\",\n"
+				+ "      \"accountingDate\": \"2019-04-01\",\n"
+				+ "      \"valueDate\": \"2019-04-01\",\n"
+				+ "      \"type\": {\n"
+				+ "        \"enumeration\": \"GBS_TRANSACTION_TYPE\",\n"
+				+ "        \"value\": \"GBS_TRANSACTION_TYPE_0023\"\n"
+				+ "      },\n"
+				+ "      \"amount\": -800,\n"
+				+ "      \"currency\": \"EUR\",\n"
+				+ "      \"description\": \"BA JOHN DOE PAYMENT INVOICE 75/2017\"\n"
+				+ "    },\n"
+				+ "    {\n"
+				+ "      \"transactionId\": \"1331714088\",\n"
+				+ "      \"operationId\": \"00000000273015\",\n"
+				+ "      \"accountingDate\": \"2019-04-01\",\n"
+				+ "      \"valueDate\": \"2019-04-01\",\n"
+				+ "      \"type\": {\n"
+				+ "        \"enumeration\": \"GBS_TRANSACTION_TYPE\",\n"
+				+ "        \"value\": \"GBS_TRANSACTION_TYPE_0015\"\n"
+				+ "      },\n"
+				+ "      \"amount\": -1,\n"
+				+ "      \"currency\": \"EUR\",\n"
+				+ "      \"description\": \"CO MONEY TRANSFER FEES\"\n"
+				+ "    }\n"
+				+ "  ]\n"
+				+ "}";
+		ObjectMapper objectMapper = new ObjectMapper();
+		//TypeReference<List<AccountTransactionsResponseDto>> listType = new TypeReference<List<AccountTransactionsResponseDto>>() {};
+		AccountTransactionsResponseDto allTransactionsResp=null;
+		ResponseTransactionsDto responseTransactionsDto=null;
+		try {
+			allTransactionsResp=objectMapper.readValue(json,AccountTransactionsResponseDto.class);
+		}catch (JsonProcessingException e) {
+			responseTransactionsDto=ResponseTransactionsDto.builder()
+					.status("OK")
+					.errors(null)
+					.payload(getAccountTransactionsRespWithValidRequest())
+					.build();
+			return ResponseEntity.ok(responseTransactionsDto);
+		}
+		responseTransactionsDto=ResponseTransactionsDto.builder()
+				.status("OK")
+				.errors(null)
+				.payload(allTransactionsResp)
+				.build();
+		return ResponseEntity.ok(responseTransactionsDto);
+	}
+	
+	public AccountTransactionsResponseDto getAccountTransactionsRespWithValidRequest() {
+		return AccountTransactionsResponseDto.builder()
+		.list(new TransactionResponseDto[0])
+		.build();
 	}
 	
 	public String mapToJson(Object obj) throws JsonProcessingException {

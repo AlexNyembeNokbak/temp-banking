@@ -1,6 +1,7 @@
 package com.banking.Payments.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,10 +15,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import com.banking.Payments.PaymentsApplicationTests;
 import com.banking.Payments.customizedException.HttpClientBadRequestErrorException;
 import com.banking.Payments.model.dto.ResponseBalanceDto;
+import com.banking.Payments.model.dto.ResponseTransactionsDto;
 
-public class AccountServiceTest {
+public class AccountServiceTest extends PaymentsApplicationTests {
 	
 	@Mock
 	private RestTemplate restTemplate;
@@ -77,6 +80,31 @@ public class AccountServiceTest {
 		ResponseEntity<ResponseBalanceDto> resp=accountService.getAccountBalance("14537780");
 		assertEquals(HttpStatus.OK,resp.getStatusCode());
 		assertEquals("KO",resp.getBody().getStatus());
+	}
+	
+	@Test
+	void getAllAccountTransactionsTestBadRequest() {
+		when(restTemplate.exchange(anyString(),
+				any(HttpMethod.class),
+				any(),
+				eq(ResponseTransactionsDto.class)))
+		.thenThrow(new HttpClientBadRequestErrorException(HttpStatus.BAD_REQUEST,"","400 Bad Request:,<EOL><EOL>???\"params\" : \"\"<EOL><EOL>??}<EOL><EOL>?],<EOL><EOL>  \"payload\": {}<EOL><EOL>}\""));
+		ResponseEntity<ResponseTransactionsDto> resp=accountService.getAllAccountTransactions("12323", "dth", "16369ert");
+		assertEquals(HttpStatus.OK,resp.getStatusCode());
+		assertEquals("KO",resp.getBody().getStatus());
+	}
+	
+	@Test
+	void getAllAccountTransactionsTestValidRequest() {
+		when(restTemplate.exchange(anyString(),
+				any(HttpMethod.class),
+				any(),
+				eq(ResponseTransactionsDto.class)))
+		.thenReturn(getAllAccountTransactionsWithValidRequest());
+		ResponseEntity<ResponseTransactionsDto> resp=accountService.getAllAccountTransactions("14537780", "2019-04-01", "2019-04-01");
+		assertEquals(HttpStatus.OK,resp.getStatusCode());
+		assertEquals("OK",resp.getBody().getStatus());
+		assertNotNull(resp.getBody().getPayload());
 	}
 
 }

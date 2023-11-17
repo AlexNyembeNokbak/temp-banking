@@ -127,5 +127,13 @@ public class HttpErrorRestTemplateHandler {
 				.payload(null)
 				.build();
 	}
+	
+	public static ResponseTransactionsDto getGenericErrorRespTransactions() {
+		return ResponseTransactionsDto.builder()
+				.status("KO")
+				.errors(new ErrorDto[] {ErrorDto.builder().code("").description("generic error").params(null).build()})
+				.payload(null)
+				.build();
+	}
 		
 }

@@ -12,9 +12,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
-
 import com.banking.Payments.model.dto.HttpErrorRestTemplateHandler;
 import com.banking.Payments.model.dto.ResponseBalanceDto;
+import com.banking.Payments.model.dto.ResponseTransactionsDto;
 
 @Service
 public class AccountService {
@@ -49,6 +49,33 @@ public class AccountService {
 	}
 	
 	
-	//+ getAllAccountTransactions(String accountId,String fromAccountingDate,String toAccountingDate) : ResponseTransactionsDto;
+	public ResponseEntity <ResponseTransactionsDto> getAllAccountTransactions(String accountId,String fromAccountingDate,String toAccountingDate) {
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Auth-Schema", "S2S");
+		headers.set("Api-Key", "FXOVVXXHVCPVPBZXIJOBGUGSKHDNFRRQJP");
+		HttpEntity<Void> requestEntity=new HttpEntity<>(headers);
+		log.info("Request entity : {}", requestEntity);
+		String url="https://sandbox.platfr.io/api/gbs/banking/v4.0/accounts/"
+			       + accountId
+			       + "/transactions?fromAccountingDate="
+			       + fromAccountingDate
+			       + "&toAccountingDate="
+			       + toAccountingDate;
+		log.info("Final url : {}", url);
+		
+		ResponseEntity <ResponseTransactionsDto> response=null;
+		try {
+			response=restTemplate.exchange(url,
+					HttpMethod.GET,
+					requestEntity,
+					ResponseTransactionsDto.class);
+		}
+		catch(HttpClientErrorException | HttpServerErrorException | UnknownHttpStatusCodeException e) {
+			log.error(e.getMessage());
+			return HttpErrorRestTemplateHandler.convertErrorMsgToResponseEntity(e.getMessage(), HttpErrorRestTemplateHandler.getGenericErrorRespTransactions());
+		}
+				
+		return response;
+	}
 
 }

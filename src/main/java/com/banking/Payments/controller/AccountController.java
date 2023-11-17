@@ -25,10 +25,12 @@ public class AccountController {
 		return accountService.getAccountBalance(accountId);
 	}
 
+	@GetMapping("/api/gbs/banking/v4.0/accounts/{accountId}/transactions")
 	public ResponseEntity <ResponseTransactionsDto> getAllAccountTransactions(@PathVariable String accountId, 
 			                                                                  @RequestParam String fromAccountingDate,
 				                                                              @RequestParam String toAccountingDate) {
-		return null;
+		log.info("A request to find all transactions for the accountId: {} from  {} to {} has arrived.", accountId, fromAccountingDate, toAccountingDate);
+		return accountService.getAllAccountTransactions(accountId,fromAccountingDate,toAccountingDate);
 	}
 
 }

@@ -235,7 +235,6 @@ public class PaymentsApplicationTests {
 				+ "  ]\n"
 				+ "}";
 		ObjectMapper objectMapper = new ObjectMapper();
-		//TypeReference<List<AccountTransactionsResponseDto>> listType = new TypeReference<List<AccountTransactionsResponseDto>>() {};
 		AccountTransactionsResponseDto allTransactionsResp=null;
 		ResponseTransactionsDto responseTransactionsDto=null;
 		try {
